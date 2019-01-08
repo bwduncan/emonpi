@@ -14,10 +14,12 @@ import struct
 import logging
 import logging.handlers
 import atexit
-import os
-import ConfigParser
+try:
+    # FIXME Python2 compatibility.
+    import ConfigParser as configparser
+except ImportError:
+    import configparser
 
-from select import select
 from gpiozero import Button
 
 # Local files
@@ -30,7 +32,7 @@ version = '3.0.1'
 # ------------------------------------------------------------------------------------
 
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('/usr/share/emonPiLCD/emonPiLCD.cfg')
 
 
@@ -50,7 +52,7 @@ mqtt_feed2_topic = config.get('mqtt', 'mqtt_feed2_topic')
 # Redis Settings
 # ------------------------------------------------------------------------------------
 redis_host = config.get('redis', 'redis_host')
-redis_port = config.get('redis', 'redis_port')
+redis_port = config.getint('redis', 'redis_port')
 r = redis.Redis(host=redis_host, port=redis_port, db=0)
 
 # ------------------------------------------------------------------------------------
@@ -354,9 +356,9 @@ class LCD(object):
         # Scan I2C bus for LCD I2C addresses as defined in led_i2c, we have a couple of models of LCD which have different adreses that are shipped with emonPi. First I2C device to match address is used.
         self.logger = logger
         for i2c_address in lcd_i2c:
-            lcd_status = subprocess.check_output(["/home/pi/emonpi/lcd/emonPiLCD_detect.sh", "%s" % i2c_address])
+            lcd_status = subprocess.check_output(["/home/pi/emonpi/lcd/emonPiLCD_detect.sh", i2c_address])
             if lcd_status.rstrip() == 'True':
-                print "I2C LCD DETECTED Ox%s" % i2c_address
+                print("I2C LCD DETECTED Ox%s" % i2c_address)
                 logger.info("I2C LCD DETECTED 0x%s" % i2c_address)
                 current_lcd_i2c = "0x%s" % i2c_address
                 # add file to identify device as emonpi
@@ -415,7 +417,7 @@ def main():
         loghandler = logging.StreamHandler()
     else:
         logfile = "/var/log/emonpilcd/emonpilcd.log"
-        print "emonPiLCD logging to: "+logfile
+        print("emonPiLCD logging to:", logfile)
         loghandler = logging.handlers.RotatingFileHandler(logfile,
                                                           mode='a',
                                                           maxBytes=1000 * 1024,
