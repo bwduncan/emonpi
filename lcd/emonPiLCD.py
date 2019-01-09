@@ -465,7 +465,7 @@ def main():
         push_btn = Button(23, pull_up=False, hold_time=5)
         push_btn.when_pressed = buttonPress
         push_btn.when_held = buttonPressLong
-    except:
+    except Exception:
         logger.error("Failed to attach LCD push button interrupt...")
 
     logger.info("Attaching shutdown button interrupt...")
@@ -473,7 +473,7 @@ def main():
         shut_btn = Button(17, pull_up=False, hold_time=5)
         shut_btn.when_pressed = preShutdown
         shut_btn.when_held = shutdown
-    except:
+    except Exception:
         logger.error("Failed to attach shutdown button interrupt...")
 
     logger.info("Connecting to redis server...")
