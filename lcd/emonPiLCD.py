@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # pylint: disable=line-too-long
 
@@ -314,7 +314,7 @@ def updateLCD():
         shutConfirm = True
 
 
-class IPAddress(object):
+class IPAddress:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -351,7 +351,7 @@ def shutdown():
     sys.exit(0)  # end script
 
 
-class LCD(object):
+class LCD:
     def __init__(self, logger):
         # Scan I2C bus for LCD I2C addresses as defined in led_i2c, we have a couple of models of LCD which have different adreses that are shipped with emonPi. First I2C device to match address is used.
         self.logger = logger
