@@ -150,7 +150,7 @@ def buttonPress():
     if not lcd.backlight:
         lcd.backlight = 1
     logger.info("Mode button SHORT press")
-    logger.info("Page: " + str(page))
+    logger.info("Page: %s", page)
     updateLCD()
 
 
@@ -359,7 +359,7 @@ class LCD:
             lcd_status = subprocess.check_output(["/home/pi/emonpi/lcd/emonPiLCD_detect.sh", i2c_address])
             if lcd_status.rstrip() == 'True':
                 print("I2C LCD DETECTED Ox%s" % i2c_address)
-                logger.info("I2C LCD DETECTED 0x%s" % i2c_address)
+                logger.info("I2C LCD DETECTED 0x%s", i2c_address)
                 current_lcd_i2c = "0x%s" % i2c_address
                 # add file to identify device as emonpi
                 open('/home/pi/data/emonpi', 'a').close()
@@ -367,7 +367,7 @@ class LCD:
 
         if lcd_status.rstrip() == 'False':
             print("I2C LCD NOT DETECTED on either 0x" + str(lcd_i2c) + " ...exiting LCD script")
-            logger.error("I2C LCD NOT DETECTED on either 0x" + str(lcd_i2c) + " ...exiting LCD script")
+            logger.error("I2C LCD NOT DETECTED on either 0x%s ...exiting LCD script", lcd_i2c)
             # add file to identify device as emonbase
             open('/home/pi/data/emonbase', 'a').close()
             sys.exit(1)
@@ -383,7 +383,7 @@ class LCD:
         string = '{0!s:<16.16}'.format(string)
         if string != self._display[line]:
             self._display[line] = string
-            self.logger.debug("LCD line {0}: {1}".format(line, string))
+            self.logger.debug("LCD line %s: %s", line, string)
             self.lcd.lcd_display_string(string, line + 1)
 
     @property
@@ -394,7 +394,7 @@ class LCD:
     def backlight(self, state):
         if not 0 <= state <= 1:
             raise IndexError("backlight state out of range")
-        self.logger.debug("LCD backlight: " + repr(state))
+        self.logger.debug("LCD backlight: %r", state)
         self.lcd.backlight = state
 
     def lcd_clear(self):
@@ -428,7 +428,7 @@ def main():
     logger.addHandler(loghandler)
     logger.setLevel(logging.INFO)
 
-    logger.info("Starting emonPiLCD V" + version)
+    logger.info("Starting emonPiLCD V%s", version)
 
     # Now check the LCD and initialise the object
     global lcd
@@ -452,7 +452,7 @@ def main():
 
     lcd[0] = "emonPi Build:"
     lcd[1] = sd_image_version
-    logger.info("SD card image build version: " + sd_image_version)
+    logger.info("SD card image build version: %s", sd_image_version)
 
     # Set up the buttons and install handlers
 
@@ -487,7 +487,7 @@ def main():
             time.sleep(1.0)
     logger.info("Connected to redis")
 
-    logger.info("Connecting to MQTT Server: " + mqtt_host + " on port: " + str(mqtt_port) + " with user: " + mqtt_user)
+    logger.info("Connecting to MQTT Server: %s on port: %d with user: %s", mqtt_host, mqtt_port, mqtt_user)
 
     def on_message(client, userdata, msg):
         if mqtt_feed1_topic in msg.topic:
