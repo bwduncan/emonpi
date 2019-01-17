@@ -83,7 +83,6 @@ hilink_device_ip = config.get('huawei', 'hilink_device_ip')
 # The first address that matches a device on the I2C bus will be used for the I2C LCD
 # ------------------------------------------------------------------------------------
 lcd_i2c = ['27', '3f']
-current_lcd_i2c = ''
 # ------------------------------------------------------------------------------------
 
 # Default Startup Page
@@ -100,13 +99,6 @@ shutConfirm = False
 # ------------------------------------------------------------------------------------
 logger = logging.getLogger("emonPiLCD")
 
-# ssh enable/disable/check commands
-ssh_enable = "systemctl enable ssh > /dev/null"
-ssh_start = "systemctl start ssh > /dev/null"
-ssh_disable = "systemctl disable ssh > /dev/null"
-ssh_stop = "systemctl stop ssh > /dev/null"
-ssh_status = "systemctl status ssh > /dev/null"
-
 
 
 
@@ -114,18 +106,16 @@ ssh_status = "systemctl status ssh > /dev/null"
 def buttonPressLong():
     logger.info("Mode button LONG press")
     if sshConfirm:
-        ret = subprocess.call(ssh_status, shell=True)
+        ret = subprocess.call(['systemctl', 'status', 'ssh'], stdout=subprocess.DEVNULL)
         if ret > 0:
             # ssh not running, enable & start it
-            subprocess.call(ssh_enable, shell=True)
-            subprocess.call(ssh_start, shell=True)
+            subprocess.call(['systemctl', 'enable', '--now', 'ssh'], stdout=subprocess.DEVNULL)
             logger.info("SSH Enabled")
             lcd[0] = 'SSH Enabled'
             lcd[1] = 'Change password!'
         else:
             # disable ssh
-            subprocess.call(ssh_disable, shell=True)
-            subprocess.call(ssh_stop, shell=True)
+            subprocess.call(['systemctl', 'disable', '--now', 'ssh'], stdout=subprocess.DEVNULL)
             logger.info("SSH Disabled")
             lcd[0] = 'SSH Disabled'
             lcd[1] = ''
@@ -138,16 +128,10 @@ def buttonPressLong():
 
 def buttonPress():
     global page
-    global lcd
-    global logger
-
-    now = time.time()
-
     if lcd.backlight:
         page += 1
     if page > max_number_pages:
         page = 0
-    buttonPress_time = now
     if not lcd.backlight:
         lcd.backlight = 1
     logger.info("Mode button SHORT press")
@@ -157,9 +141,6 @@ def buttonPress():
 
 def updateLCD():
     global page
-    global lcd
-    global r
-    global logger
     global sshConfirm
     global shutConfirm
 
@@ -291,7 +272,7 @@ def updateLCD():
         lcd[1] = sd_image_version
 
     elif page == 8:
-        ret = subprocess.call(ssh_status, shell=True)
+        ret = subprocess.call(['systemctl', 'status', 'ssh'], stdout=subprocess.DEVNULL)
         if ret > 0:
             # ssh not running
             lcd[0] = "SSH Enable?"
@@ -336,8 +317,6 @@ def preShutdown():
 
 
 def shutdown():
-
-    global lcd
     lcd.backlight = 1
     lcd[0] = "emonPi Shutdown"
     lcd[1] = "SHUTDOWN NOW!"
@@ -401,7 +380,6 @@ class LCD:
 def main():
     global page
     global sd_image_version
-    global r
 
     # Initialise some redis variables
     r.set("gsm:active", 0)
