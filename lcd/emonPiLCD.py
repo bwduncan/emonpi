@@ -342,7 +342,6 @@ def shutdown():
     lcd[0] = "emonPi Shutdown"
     lcd[1] = "SHUTDOWN NOW!"
     time.sleep(2)
-    lcd.lcd_clear()
     lcd[0] = "Wait 30s..."
     lcd[1] = "Before Unplug!"
     time.sleep(4)
@@ -397,9 +396,6 @@ class LCD:
             raise IndexError("backlight state out of range")
         self.logger.debug("LCD backlight: %r", state)
         self.lcd.backlight = state
-
-    def lcd_clear(self):
-        self.lcd.lcd_clear()
 
 
 def main():
