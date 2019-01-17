@@ -33,7 +33,9 @@ version = '3.0.1'
 
 
 config = configparser.ConfigParser()
-config.read('/usr/share/emonPiLCD/emonPiLCD.cfg')
+if not config.read(['/usr/share/emonPiLCD/emonPiLCD.cfg', './emonPiLCD.cfg']):
+    print("Failed to read config file.", file=sys.stderr)
+    sys.exit(1)
 
 
 # ------------------------------------------------------------------------------------
@@ -96,7 +98,6 @@ shutConfirm = False
 # ------------------------------------------------------------------------------------
 # Start Logging
 # ------------------------------------------------------------------------------------
-uselogfile = config.get('general', 'uselogfile')
 logger = logging.getLogger("emonPiLCD")
 
 # ssh enable/disable/check commands
@@ -413,7 +414,7 @@ def main():
 
     # First set up logging
     atexit.register(logging.shutdown)
-    if not uselogfile:
+    if not config.getboolean('general', 'uselogfile'):
         loghandler = logging.StreamHandler()
     else:
         logfile = "/var/log/emonpilcd/emonpilcd.log"
