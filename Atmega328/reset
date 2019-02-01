@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import RPi.GPIO as GPIO
 import time
@@ -11,7 +11,6 @@ GPIO.output(pin, GPIO.HIGH)
 time.sleep(0.12)
 GPIO.output(pin, GPIO.LOW)
 
-print "ATmega328 reset"
+print("ATmega328 reset")
 
 GPIO.cleanup()
-exit

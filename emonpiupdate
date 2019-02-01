@@ -11,12 +11,12 @@ echo
 # ALLREADY INSTALLED
 # sudo pip install xmltodict
 # sudo pip install requests
-sudo pip install paho-mqtt --upgrade
 
 # Ensure rpi gpio is latest version and gpiozero is installed, required for V2.2.0 LCD script
 # rng-tools used to speed up entropy generation https://community.openenergymonitor.org/t/cant-connect-to-local-emoncms/9498/7
 sudo apt-get update
-sudo apt-get install python-gpiozero python-rpi.gpio rng-tools -y
+sudo apt-get install -y python3-pip python3-requests python3-xmltodict python3-smbus python3-gpiozero python3-rpi.gpio rng-tools
+sudo pip3 install paho-mqtt --upgrade
 
 sudo /etc/init.d/emonhub stop
 
